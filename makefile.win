@@ -1,0 +1,35 @@
+# Project: DoodleJump
+# Makefile created by Red Panda C++ 2.26.2249
+
+CPP      = g++.exe
+CC       = gcc.exe
+WINDRES  = windres.exe
+RES      = DoodleJump_private.res
+OBJ      = main.o $(RES)
+LINKOBJ  = main.o DoodleJump_private.res
+CLEANOBJ  =  main.o  DoodleJump_private.res DoodleJump.exe
+LIBS     =  -s -mwindows -static
+INCS     =  
+CXXINCS  =  
+BIN      = DoodleJump.exe
+CXXFLAGS = $(CXXINCS)  -O2 -pipe
+CFLAGS   = $(INCS)  -O2 -pipe
+RM       = del /q /f
+WINDRESFLAGS  = 
+
+.PHONY: all all-before all-after clean clean-custom
+
+all: all-before $(BIN) all-after
+
+clean: clean-custom
+	-$(RM) $(CLEANOBJ) > NUL 2>&1
+
+$(BIN): $(OBJ)
+	$(CPP) $(LINKOBJ) -o $(BIN) $(LIBS)
+
+main.o: main.cpp
+	$(CPP) -c main.cpp -o main.o $(CXXFLAGS)  -finput-charset=UTF-8 -fexec-charset=gbk
+
+DoodleJump_private.res: DoodleJump_private.rc 
+	$(WINDRES) -i DoodleJump_private.rc --input-format=rc -o DoodleJump_private.res -O coff $(WINDRESFLAGS) 
+
