@@ -726,12 +726,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 		MessageBox(NULL, "← →控制移动，空格跳跃。\n 开始你的游戏吧~^v^~", "游戏说明", MB_OK);
-
-		// 直接播放.wav文件，_T表示宽字符串，SND_ASYNC代表异步播放，SND_LOOP代表循环播放
-		// PlaySound("res/deal.wav", NULL, SND_ASYNC | SND_LOOP);
-
-		// mciSendString("OPEN res/deal.wav ALIAS MUSIC", NULL, 0, 0); // 打开文件
-		// mciSendString("PLAY MUSIC FROM 0", NULL, 0, NULL);			// 播放
 		break;
 	case WM_LBUTTONDOWN:
 		mousex = LOWORD(lParam);
