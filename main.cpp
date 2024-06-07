@@ -14,7 +14,7 @@ HBITMAP monster, monster0, monster1, monster2, monster3, monster4, monster5; // 
 HBITMAP Cmonster0, Cmonster1, Cmonster2, Cmonster3, Cmonster4, Cmonster5;	 // 怪兽
 HBITMAP ufo, Cufo;															 // ufo
 HBITMAP doodle, Cdoodle;													 // doodle
-HBITMAP pay;
+HBITMAP pay;																 // 收款码
 
 HDC hdc, mdc, bufdc;
 HWND hWnd;
@@ -189,7 +189,7 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	moveBoard = (HBITMAP)LoadImage(NULL, "moveBoard.bmp", IMAGE_BITMAP, 80, 15, LR_LOADFROMFILE);
 	brokenBoard = (HBITMAP)LoadImage(NULL, "brokenBoard.bmp", IMAGE_BITMAP, 80, 60, LR_LOADFROMFILE);
 	// 支付
-	pay = (HBITMAP)LoadImage(NULL, "pay.bmp", IMAGE_BITMAP, 329, 243, LR_LOADFROMFILE);
+	pay = (HBITMAP)LoadImage(NULL, "pay.bmp", IMAGE_BITMAP, 206, 152, LR_LOADFROMFILE);
 
 	num = 0;
 	x = 180;
@@ -590,6 +590,13 @@ void MyPaint(HDC hdc)
 		SelectObject(bufdc, monster3);
 		BitBlt(mdc, mx, my, 71, 48, bufdc, 0, 0, SRCPAINT);
 
+		// 显示收款码
+		if (payShow)
+		{
+			SelectObject(bufdc, pay);
+			BitBlt(mdc, 70, 250, 206, 152, bufdc, 0, 0, SRCCOPY);
+		}
+
 		BitBlt(hdc, 0, 0, winX, winY, mdc, 0, 0, SRCCOPY);
 		tPre = GetTickCount();
 
@@ -610,12 +617,6 @@ void MyPaint(HDC hdc)
 		num++;									// 静止也在动
 		if (num == 4)
 			num = 0;
-
-		if (payShow) // 显示收款码
-		{
-			SelectObject(bufdc, pay);
-			BitBlt(mdc, 0, 0, 329, 243, bufdc, 0, 0, SRCCOPY);
-		}
 
 		// 修改最高得分
 		fp = fopen(filename, "r+"); // 打开文件用于读写，如果文件不存在则创建它
@@ -791,7 +792,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	switch (message)
 	{
 	case WM_CREATE:
-		MessageBox(NULL, "← →控制移动，空格跳跃。", "游戏说明", MB_OK);
+		MessageBox(NULL, "← →控制移动，空格跳跃。\n 开始你的游戏吧~^v^~", "游戏说明", MB_OK);
 		break;
 	case WM_KEYUP:
 		walk = 0;
@@ -831,13 +832,12 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			mode = 0;
 		}
-
 		// 支付
-		if (mode == 3 && mousex >= 63 && mousex <= 267 && mousey >= 542 && mousey <= 580)
+		else if (mode == 3 && mousex >= 63 && mousex <= 267 && mousey >= 542 && mousey <= 580)
 		{
 			payShow = 1;
 		}
-		else if (payShow == 1 && mousex && mousey)
+		else if (mode == 3 && mousex >= 70 && mousex <= 280 && mousey >= 250 && mousey <= 410)
 		{
 			payShow = 0;
 		}
@@ -893,6 +893,14 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DeleteObject(bg3);
 		DeleteObject(bg2);
 		DeleteObject(bg);
+		DeleteObject(pay);
+		DeleteObject(doodle);
+		DeleteObject(Cdoodle);
+		DeleteObject(ufo);
+		DeleteObject(Cufo);
+		DeleteObject(map);
+		DeleteObject(sky);
+		DeleteObject(sea);
 		DeleteObject(brokenBoard);
 		DeleteObject(moveBoard);
 		DeleteObject(monster0);
