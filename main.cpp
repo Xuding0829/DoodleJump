@@ -3,9 +3,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
-#include <mmsystem.h>
-#pragma comment(lib, "winmm.lib")
-
 #define N 15
 
 // 全局变量声明
@@ -31,7 +28,7 @@ int gameMap = -1;  // 选择地图
 int totol;		   // 历史板块
 int maxScore, now; // 记录最高得分，当前局踩过的板块
 int num;
-int X, Y;						// 人物静态贴图坐标
+int X, Y;						
 int x, y;						// 游戏中
 int score;						// 分数
 static char sc[100];			// 显示分数
@@ -190,11 +187,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	// 支付
 	pay = (HBITMAP)LoadImage(NULL, "res/pay.bmp", IMAGE_BITMAP, 206, 152, LR_LOADFROMFILE);
 
-	// 导入音频资源
-	// PlaySound(MAKEINTRESOURCE(IDR_DENG), NULL, SND_RESOURCE | SND_ASYNC | SND_LOOP);
-
-	num = 0;
-
 	// 结算界面的怪兽
 	mx = 125;
 	my = 350;
@@ -213,7 +205,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		pos[i].x = rand() % 5;
 		pos[i].y = 550 - 80 * i;
 	}
-	pos[6].x = 3;
 
 	x = 350 / 6 * pos[0].x + 5;
 	y = pos[0].y;
@@ -524,7 +515,7 @@ void MyPaint(HDC hdc)
 			}
 			else if (i == 5)
 			{
-				if (monsterShow == 1 && y >= pos[i].y - 20 && y <= pos[i].y + 20 && x >= 350 / 6 * pos[i].x && x <= 350 / 6 * pos[i].x + 80 && v >= 0)
+				if (monsterShow == 1 && y >= pos[i].y - 20 && y <= pos[i].y + 20 && x >= 350 / 6 * pos[i].x && x <= 350 / 6 * pos[i].x + 20 && v >= 0)
 				{
 					Sleep(300);
 					mode = 0;
