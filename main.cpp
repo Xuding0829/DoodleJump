@@ -33,7 +33,7 @@ int maxScore, now;				// 记录最高得分，当前局踩过的板块
 int num, dir, walk;				// num 人物当前动画  dir 人物朝向  isWalk 人是否行走
 int X, Y;						// 人物静态贴图坐标
 int x, y;						// 游戏中
-int flag, maxy;					// flag 左右脚标志  maxy 当前y能到达的最大高度
+int flag;						// flag 左右脚标志
 int score;						// 分数
 static char sc[100];			// 显示分数
 int mousex, mousey;				// 鼠标坐标x,y
@@ -47,7 +47,7 @@ int zqt, zqtUse, zqtScore, cnt; // 竹蜻蜓
 int isBroken;					// 一次性板是否坏了
 int movex = 4;					// 板子位移
 int height = 30;				// 二段跳高度
-int tmp = 8;					// 竹蜻蜓所在版
+int tmp;						// 竹蜻蜓所在版
 int mx, my, mv;					// 怪兽坐标 速度
 int payShow;					// 显示支付界面
 const char filename[] = "data/histroyScore.txt";
@@ -55,8 +55,8 @@ const char filename2[] = "data/histroyBoard.txt";
 struct point
 {
 	int x, y;
-} plat[20], deadplat[20]; // 板坐标  // 死亡时板块的位置
-int deadx, deady;		  // 死亡坐标
+} pos[20], deadpos[20]; // 板坐标  // 死亡时板块的位置
+int deadx, deady;		// 死亡坐标
 
 FILE *fp;
 
@@ -198,7 +198,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	num = 0;
 	x = 180;
 	y = 330;
-	maxy = y;
 
 	// 结算界面的怪兽
 	mx = 125;
@@ -213,10 +212,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	srand((unsigned)time(NULL));
 	for (int i = 0; i < N; i++)
 	{
-		plat[i].x = rand() % 5;
-		plat[i].y = 550 - 80 * i;
+		pos[i].x = rand() % 5;
+		pos[i].y = 550 - 80 * i;
 	}
-	plat[6].x = 100;
+	pos[6].x = 100;
 
 	MyPaint(hdc);
 
@@ -355,8 +354,8 @@ void MyPaint(HDC hdc)
 			if (i == 6)
 			{
 				SelectObject(bufdc, moveBoard);
-				BitBlt(mdc, plat[i].x + 25, plat[i].y + 95, 80, 15, bufdc, 0, 0, SRCAND);
-				BitBlt(mdc, plat[i].x + 25, plat[i].y + 95, 80, 15, bufdc, 0, 0, SRCPAINT);
+				BitBlt(mdc, pos[i].x + 25, pos[i].y + 95, 80, 15, bufdc, 0, 0, SRCAND);
+				BitBlt(mdc, pos[i].x + 25, pos[i].y + 95, 80, 15, bufdc, 0, 0, SRCPAINT);
 				continue;
 			}
 
@@ -364,22 +363,15 @@ void MyPaint(HDC hdc)
 			if (i == 3 && isBroken == 1)
 			{
 				SelectObject(bufdc, brokenBoard);
-				BitBlt(mdc, 350 / 6 * plat[i].x + 25, plat[i].y + 95, 80, 30, bufdc, 0, 30, SRCAND);
-				BitBlt(mdc, 350 / 6 * plat[i].x + 25, plat[i].y + 95, 80, 30, bufdc, 0, 0, SRCPAINT);
+				BitBlt(mdc, 350 / 6 * pos[i].x + 25, pos[i].y + 95, 80, 30, bufdc, 0, 30, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[i].x + 25, pos[i].y + 95, 80, 30, bufdc, 0, 0, SRCPAINT);
 				continue;
 			}
 
 			SelectObject(bufdc, board[i]); // 普通板
-			BitBlt(mdc, 350 / 6 * plat[i].x + 25, plat[i].y + 85, 80, 15, bufdc, 0, 0, SRCAND);
-			BitBlt(mdc, 350 / 6 * plat[i].x + 25, plat[i].y + 85, 80, 15, bufdc, 0, 0, SRCPAINT);
+			BitBlt(mdc, 350 / 6 * pos[i].x + 25, pos[i].y + 85, 80, 15, bufdc, 0, 0, SRCAND);
+			BitBlt(mdc, 350 / 6 * pos[i].x + 25, pos[i].y + 85, 80, 15, bufdc, 0, 0, SRCPAINT);
 		}
-
-		// 移动板
-		plat[6].x += movex;
-		if (plat[6].x >= 250)
-			movex = -movex;
-		if (plat[6].x <= 0)
-			movex = -movex;
 
 		// 人
 		SelectObject(bufdc, role);
@@ -390,8 +382,8 @@ void MyPaint(HDC hdc)
 		if (zqt)
 		{
 			SelectObject(bufdc, hopter);
-			BitBlt(mdc, 350 / 6 * plat[tmp].x + 25, plat[tmp].y + 40, 50, 50, bufdc, 50, 50, SRCAND);
-			BitBlt(mdc, 350 / 6 * plat[tmp].x + 25, plat[tmp].y + 40, 50, 50, bufdc, 50, 0, SRCPAINT);
+			BitBlt(mdc, 350 / 6 * pos[tmp].x + 25, pos[tmp].y + 40, 50, 50, bufdc, 50, 50, SRCAND);
+			BitBlt(mdc, 350 / 6 * pos[tmp].x + 25, pos[tmp].y + 40, 50, 50, bufdc, 50, 0, SRCPAINT);
 		}
 
 		if (zqtUse)
@@ -405,52 +397,56 @@ void MyPaint(HDC hdc)
 		}
 
 		// 怪兽
+		int no;
+		if (!monsterShow)
+			no = rand() % 7;
+
 		if (monsterShow)
 		{
 			// 随机怪兽的形状
-			int no = rand() % 6;
 			switch (no)
 			{
 			case 0:
 				SelectObject(bufdc, Cmonster0);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 195, 97, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 195, 97, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster0);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 195, 97, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 195, 97, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 1:
 				SelectObject(bufdc, Cmonster1);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 43, 55, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 43, 55, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster1);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 43, 55, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 43, 55, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 2:
 				SelectObject(bufdc, Cmonster2);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 78, 30, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 78, 30, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 78, 30, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 78, 30, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 3:
 				SelectObject(bufdc, Cmonster3);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 71, 48, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 71, 48, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster3);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 71, 48, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 71, 48, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 4:
 				SelectObject(bufdc, Cmonster4);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 80, 55, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 80, 55, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster4);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 80, 55, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 80, 55, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 5:
 				SelectObject(bufdc, Cmonster5);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 44, 55, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 44, 55, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster5);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 44, 55, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 44, 55, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 6:
 				SelectObject(bufdc, monster);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 100, 55, bufdc, 0, 55, SRCAND);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 100, 55, bufdc, 0, 0, SRCPAINT);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 100, 55, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 100, 55, bufdc, 0, 0, SRCPAINT);
+				break;
 			}
 		}
 
@@ -459,7 +455,15 @@ void MyPaint(HDC hdc)
 
 		tPre = GetTickCount(); // 记录此次绘图时间
 
+		// 移动板
+		pos[6].x += movex;
+		if (pos[6].x >= 250)
+			movex = -movex;
+		if (pos[6].x <= 0)
+			movex = -movex;
+
 		flag++; // 表示左右脚
+
 		if (dir == 1)
 		{
 			if (flag % 6 == 1)
@@ -500,7 +504,6 @@ void MyPaint(HDC hdc)
 		v = v + a;
 		y = y + v;
 
-		// 禁止穿越
 		if (x + 40 > 350)
 			x = 300;
 		if (x + 40 < 0)
@@ -512,9 +515,9 @@ void MyPaint(HDC hdc)
 			for (int i = 0; i < N; i++)
 			{
 				y = 250;
-				plat[i].y = plat[i].y - v;
-				plat[8].y = plat[0].y;
-				if (plat[i].y > 540)
+				pos[i].y = pos[i].y - v;
+				pos[8].y = pos[0].y;
+				if (pos[i].y > 540)
 				{
 					if (i == 0)
 						zqt = 0;
@@ -523,14 +526,26 @@ void MyPaint(HDC hdc)
 					score++;
 					if (i == 3)
 						isBroken = 0;
-					plat[i].y = -40;
-					plat[i].x = rand() % 5;
+					pos[i].y = -40;
+					pos[i].x = rand() % 5;
 				}
 			}
 		}
 		for (int i = 0; i < N; i++)
 		{
-			if (i == 3)
+			if (i == 0)
+			{
+				if (zqt == 1 && y >= pos[i].y - 25 && y <= pos[i].y + 25 && x >= 350 / 6 * pos[i].x + 25 && x <= 350 / 6 * pos[i].x + 25 + 80 && v >= 0)
+				{
+					if (zqt == 1)
+					{
+						zqtUse = 1;
+						zqt = 0;
+						zqtScore = score;
+					}
+				}
+			}
+			else if (i == 3)
 			{
 				if (isBroken == 1)
 				{
@@ -538,30 +553,18 @@ void MyPaint(HDC hdc)
 				}
 				else if (isBroken == 0)
 				{
-					int banx = 350 / 6 * plat[i].x;
-					hpen = CreatePen(PS_SOLID, 3, RGB(255, 0, 0));
-					SelectObject(hdc, hpen);
-					if (y >= plat[i].y - 25 && y <= plat[i].y + 25 && x >= plat[i].y && x <= plat[i].y + 80 && v >= 0)
+					if (y >= pos[i].y - 25 && y <= pos[i].y + 25 && x >= 350 / 6 * pos[i].x && x <= 350 / 6 * pos[i].x && v >= 0)
 					{
 						isBroken = 1;
 						v = -40;
-						y = plat[i].y;
+						y = pos[i].y;
 					}
-					DeleteObject(hpen);
-				}
-			}
-			else if (i == 6)
-			{
-				if (y >= plat[i].y - 20 && y <= plat[i].y + 20 && x >= plat[i].x && x <= plat[i].x + 80 && v >= 0)
-				{
-					// 说明碰到板板了
-					v = -40;
-					y = plat[i].y;
 				}
 			}
 			else if (i == 5)
 			{
-				if (monsterShow == 1 && y >= plat[i].y - 20 && y <= plat[i].y + 20 && x >= plat[i].x && x <= plat[i].x + 80 && v >= 0)
+
+				if (monsterShow == 1 && y >= pos[i].y - 20 && y <= pos[i].y + 20 && x >= pos[i].x && x <= pos[i].x + 80 && v >= 0)
 				{
 					Sleep(300);
 					mode = 0;
@@ -570,46 +573,37 @@ void MyPaint(HDC hdc)
 					v = -10;
 					isBroken = 0;
 					mode = 3;
-					for (int i = 0; i < N; i++)
+					for (int j = 0; j < N; j++)
 					{
-						srand((unsigned)time(NULL) * i);
-
-						plat[i].x = rand() % 5;
-						plat[i].y = 500 - 80 * i;
+						srand((unsigned)time(NULL));
+						pos[j].x = rand() % 5;
+						pos[j].y = 550 - 80 * j;
 					}
-					plat[6].x = 100;
+					pos[6].x = 100;
 				}
 			}
-			// 触发竹蜻蜓的使用
-			if (zqt == 1 && y >= plat[8].y - 25 && y <= plat[8].y + 25 && x >= 350 / 6 * plat[8].x + 25 && x <= 350 / 6 * plat[8].x + 25 + 80 && v >= 0)
+			else if (i == 6)
 			{
-				if (zqt == 1)
+				if (y >= pos[i].y - 20 && y <= pos[i].y + 20 && x >= pos[i].x && x <= pos[i].x + 80 && v >= 0)
 				{
-					zqtUse = 1;
-					zqt = 0;
-					zqtScore = score;
+					v = -40;
+					y = pos[i].y;
 				}
 			}
 
-			int banx = 350 / 6 * plat[i].x;
-			hpen = CreatePen(PS_SOLID, 3, RGB(255, 0, 0));
-			SelectObject(hdc, hpen);
-			if (y >= plat[i].y - 20 && y <= plat[i].y + 20 && x >= plat[i].y && x <= plat[i].y + 80 && v >= 0)
+			if (y >= pos[i].y - 20 && y <= pos[i].y + 20 && x >= 350 / 6 * pos[i].x && x <= 350 / 6 * pos[i].x + 80 && v >= 0)
 			{
 				v = -40;
-				y = plat[i].y;
+				y = pos[i].y;
 				now++;
 				totol++;
 			}
-			DeleteObject(hpen);
 		}
 
 		// 生成竹蜻蜓
 		if (score % 6 == 0 && zqtUse == 0)
 		{
 			zqt = 1;
-			plat[tmp].x = plat[0].x;
-			plat[tmp].y = plat[0].y;
 		}
 
 		// 使用竹蜻蜓
@@ -624,7 +618,7 @@ void MyPaint(HDC hdc)
 		}
 
 		// 生成怪兽
-		if (score % 10 == 0)
+		if (score % 10 == 0 && score != 0)
 		{
 			monsterShow = 1;
 		}
@@ -643,8 +637,8 @@ void MyPaint(HDC hdc)
 			}
 			if (monsterShow == 1)
 			{
-				if (bulletx <= 350 / 6 * plat[10].x + 25 + 100 && bulletx >= 350 / 6 * plat[10].x + 25 && bullety <= plat[10].y + 35 + 25 && bullety >= plat[10].y + 35 - 25)
-				{ // 命中
+				if (bulletx <= 350 / 6 * pos[10].x + 25 + 100 && bulletx >= 350 / 6 * pos[10].x + 25 && bullety <= pos[10].y + 35 + 25 && bullety >= pos[10].y + 35 - 25)
+				{
 					bullet = 0;
 					monsterShow = 0;
 					score += 5; // +5
@@ -660,8 +654,8 @@ void MyPaint(HDC hdc)
 			deady = 720 - 95;
 			for (int i = 0; i < 20; i++)
 			{
-				deadplat[i].x = plat[i].x;
-				deadplat[i].y = plat[i].y;
+				deadpos[i].x = pos[i].x;
+				deadpos[i].y = pos[i].y;
 			}
 
 			Sleep(300);
@@ -673,10 +667,10 @@ void MyPaint(HDC hdc)
 			mode = 3;
 			for (int i = 0; i < N; i++)
 			{
-				plat[i].x = rand() % 5;
-				plat[i].y = 550 - 80 * i;
+				pos[i].x = rand() % 5;
+				pos[i].y = 550 - 80 * i;
 			}
-			plat[6].x = 100;
+			pos[6].x = 100;
 		}
 
 		sprintf(sc, "得分：%d", score);
@@ -688,11 +682,13 @@ void MyPaint(HDC hdc)
 		Sleep(300);
 		SelectObject(bufdc, map);
 		BitBlt(mdc, 0, 0, winX, winY, bufdc, 0, 0, SRCCOPY);
-		BitBlt(hdc, 0, 0, winX, winY, mdc, 0, 0, SRCCOPY);
 
 		SelectObject(bufdc, role);
-		BitBlt(mdc, 0, 0, 47, 95, bufdc, num * 47, 95, SRCAND);
-		BitBlt(mdc, 0, 0, 47, 95, bufdc, num * 47, 95, SRCAND);
+		BitBlt(mdc, 50, 520, 47, 95, bufdc, num * 47, 95, SRCAND);
+		BitBlt(mdc, 50, 520, 47, 95, bufdc, num * 47, 0, SRCPAINT);
+		num++;
+		if (num == 8)
+			num = 0;
 
 		BitBlt(hdc, 0, 0, winX, winY, mdc, 0, 0, SRCCOPY);
 	}
