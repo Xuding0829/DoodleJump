@@ -14,6 +14,7 @@ HBITMAP monster, monster0, monster1, monster2, monster3, monster4, monster5; // 
 HBITMAP Cmonster0, Cmonster1, Cmonster2, Cmonster3, Cmonster4, Cmonster5;	 // 怪兽
 HBITMAP ufo, Cufo;															 // ufo
 HBITMAP doodle, Cdoodle;													 // doodle
+HBITMAP pay;
 
 HDC hdc, mdc, bufdc;
 HWND hWnd;
@@ -34,7 +35,7 @@ int score;						 // 分数
 static char sc[100];			 // 显示分数
 int mousex, mousey;				 // 鼠标坐标x,y
 int a = 5, v = -10;				 // 加速度、速度
-int mode;						 // mode 1 游戏界面 mode 0 菜单界面 mode 2 选择地图 mode 3 游戏结算界面
+int mode;						 // mode 1 游戏界面 mode 0 菜单界面 mode 2 选择地图 mode 3 游戏结算界面 4 支付界面
 int winX = 350, winY = 720;		 // 窗口大小
 char *helptxt[6] = {};			 // 帮助
 int bullet, bulletx, bullety;	 // 子弹
@@ -45,6 +46,7 @@ int movex = 4;					 // 板子位移
 int height = 30;				 // 二段跳高度
 int tmp = 8;					 // 竹蜻蜓所在版
 int mx, my, mv;					 // 怪兽坐标 速度
+int payShow;					 // 显示支付界面
 const char filename[] = "histroyScore.txt";
 const char filename2[] = "histroyBoard.txt";
 struct point
@@ -186,6 +188,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	}
 	moveBoard = (HBITMAP)LoadImage(NULL, "moveBoard.bmp", IMAGE_BITMAP, 80, 15, LR_LOADFROMFILE);
 	brokenBoard = (HBITMAP)LoadImage(NULL, "brokenBoard.bmp", IMAGE_BITMAP, 80, 60, LR_LOADFROMFILE);
+	// 支付
+	pay = (HBITMAP)LoadImage(NULL, "pay.bmp", IMAGE_BITMAP, 329, 243, LR_LOADFROMFILE);
 
 	num = 0;
 	x = 180;
@@ -585,7 +589,6 @@ void MyPaint(HDC hdc)
 		BitBlt(mdc, mx, my, 71, 48, bufdc, 0, 0, SRCAND);
 		SelectObject(bufdc, monster3);
 		BitBlt(mdc, mx, my, 71, 48, bufdc, 0, 0, SRCPAINT);
-		
 
 		BitBlt(hdc, 0, 0, winX, winY, mdc, 0, 0, SRCCOPY);
 		tPre = GetTickCount();
@@ -607,6 +610,12 @@ void MyPaint(HDC hdc)
 		num++;									// 静止也在动
 		if (num == 4)
 			num = 0;
+
+		if (payShow) // 显示收款码
+		{
+			SelectObject(bufdc, pay);
+			BitBlt(mdc, 0, 0, 329, 243, bufdc, 0, 0, SRCCOPY);
+		}
 
 		// 修改最高得分
 		fp = fopen(filename, "r+"); // 打开文件用于读写，如果文件不存在则创建它
@@ -822,6 +831,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 			mode = 0;
 		}
+
+		// 支付
+		if (mode == 3 && mousex >= 63 && mousex <= 267 && mousey >= 542 && mousey <= 580)
+		{
+			payShow = 1;
+		}
+		else if (payShow == 1 && mousex && mousey)
+		{
+			payShow = 0;
+		}
+
 		break;
 	case WM_KEYDOWN: // 按下键盘消息
 		// 判断按键的虚拟键码
@@ -887,6 +907,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		DeleteObject(Cmonster3);
 		DeleteObject(Cmonster4);
 		DeleteObject(Cmonster5);
+		DeleteObject(pay);
 		for (int i = 0; i < N; i++)
 			DeleteObject(board[i]);
 		ReleaseDC(hWnd, hdc);
