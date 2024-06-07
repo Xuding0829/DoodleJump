@@ -27,13 +27,12 @@ HBRUSH hbrush;
 PAINTSTRUCT ps;
 TEXTMETRIC tm;
 
-int gameMap = -1;				// 选择地图
-int totol;						// 历史板块
-int maxScore, now;				// 记录最高得分，当前局踩过的板块
-int num, dir, walk;				// num 人物当前动画  dir 人物朝向  isWalk 人是否行走
+int gameMap = -1;  // 选择地图
+int totol;		   // 历史板块
+int maxScore, now; // 记录最高得分，当前局踩过的板块
+int num;
 int X, Y;						// 人物静态贴图坐标
 int x, y;						// 游戏中
-int flag;						// flag 左右脚标志
 int score;						// 分数
 static char sc[100];			// 显示分数
 int mousex, mousey;				// 鼠标坐标x,y
@@ -41,15 +40,14 @@ int a = 5, v = -10;				// 加速度、速度
 int mode;						// mode 1 游戏界面 mode 0 菜单界面 mode 2 选择地图 mode 3 游戏结算界面 4 支付界面
 int winX = 350, winY = 720;		// 窗口大小
 char *helptxt[6] = {};			// 帮助
-int bullet, bulletx, bullety;	// 子弹
 int monsterShow;				// show 0 不出现怪兽 show 1 出现怪兽
 int zqt, zqtUse, zqtScore, cnt; // 竹蜻蜓
 int isBroken;					// 一次性板是否坏了
 int movex = 4;					// 板子位移
 int height = 30;				// 二段跳高度
-int tmp;						// 竹蜻蜓所在版
 int mx, my, mv;					// 怪兽坐标 速度
 int payShow;					// 显示支付界面
+int no;
 const char filename[] = "data/histroyScore.txt";
 const char filename2[] = "data/histroyBoard.txt";
 struct point
@@ -196,8 +194,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	// PlaySound(MAKEINTRESOURCE(IDR_DENG), NULL, SND_RESOURCE | SND_ASYNC | SND_LOOP);
 
 	num = 0;
-	x = 180;
-	y = 330;
 
 	// 结算界面的怪兽
 	mx = 125;
@@ -208,6 +204,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	X = 55;
 	Y = 399;
 
+	no = rand() % 7;
+
 	// 初始化板坐标
 	srand((unsigned)time(NULL));
 	for (int i = 0; i < N; i++)
@@ -215,7 +213,10 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		pos[i].x = rand() % 5;
 		pos[i].y = 550 - 80 * i;
 	}
-	pos[6].x = 100;
+	pos[6].x = 3;
+
+	x = 350 / 6 * pos[0].x + 5;
+	y = pos[0].y;
 
 	MyPaint(hdc);
 
@@ -332,6 +333,7 @@ void MyPaint(HDC hdc)
 	{
 		// 游戏界面
 		// 在mdc中贴上背景图
+
 		switch (gameMap)
 		{
 		case 0:
@@ -373,34 +375,31 @@ void MyPaint(HDC hdc)
 			BitBlt(mdc, 350 / 6 * pos[i].x + 25, pos[i].y + 85, 80, 15, bufdc, 0, 0, SRCPAINT);
 		}
 
-		// 人
-		SelectObject(bufdc, role);
-		BitBlt(mdc, x, y, 47, 95, bufdc, num * 47, 95, SRCAND);
-		BitBlt(mdc, x, y, 47, 95, bufdc, num * 47, 0, SRCPAINT);
+		// doodle
+		SelectObject(bufdc, Cdoodle);
+		BitBlt(mdc, x + 5, y, 85, 85, bufdc, 0, 0, SRCAND);
+		SelectObject(bufdc, doodle);
+		BitBlt(mdc, x + 5, y, 85, 85, bufdc, 0, 0, SRCPAINT);
 
 		// 竹蜻蜓
 		if (zqt)
 		{
 			SelectObject(bufdc, hopter);
-			BitBlt(mdc, 350 / 6 * pos[tmp].x + 25, pos[tmp].y + 40, 50, 50, bufdc, 50, 50, SRCAND);
-			BitBlt(mdc, 350 / 6 * pos[tmp].x + 25, pos[tmp].y + 40, 50, 50, bufdc, 50, 0, SRCPAINT);
+			BitBlt(mdc, 350 / 6 * pos[0].x + 25, pos[0].y + 40, 50, 50, bufdc, 50, 50, SRCAND);
+			BitBlt(mdc, 350 / 6 * pos[0].x + 25, pos[0].y + 40, 50, 50, bufdc, 50, 0, SRCPAINT);
 		}
 
 		if (zqtUse)
 		{
 			SelectObject(bufdc, hopter);
-			BitBlt(mdc, x, y - 25, 50, 50, bufdc, cnt * 50, 50, SRCAND);
-			BitBlt(mdc, x, y - 25, 50, 50, bufdc, cnt * 50, 0, SRCPAINT);
+			BitBlt(mdc, x + 20, y - 15, 50, 50, bufdc, cnt * 50, 50, SRCAND);
+			BitBlt(mdc, x + 20, y - 15, 50, 50, bufdc, cnt * 50, 0, SRCPAINT);
 			cnt++;
 			if (cnt == 4)
 				cnt = 0;
 		}
 
 		// 怪兽
-		int no;
-		if (!monsterShow)
-			no = rand() % 7;
-
 		if (monsterShow)
 		{
 			// 随机怪兽的形状
@@ -408,44 +407,44 @@ void MyPaint(HDC hdc)
 			{
 			case 0:
 				SelectObject(bufdc, Cmonster0);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 195, 97, bufdc, 0, 0, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 195, 97, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster0);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 195, 97, bufdc, 0, 0, SRCPAINT);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 195, 97, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 1:
 				SelectObject(bufdc, Cmonster1);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 43, 55, bufdc, 0, 0, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 43, 55, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster1);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 43, 55, bufdc, 0, 0, SRCPAINT);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 43, 55, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 2:
 				SelectObject(bufdc, Cmonster2);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 78, 30, bufdc, 0, 0, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 78, 30, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 78, 30, bufdc, 0, 0, SRCPAINT);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 78, 30, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 3:
 				SelectObject(bufdc, Cmonster3);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 71, 48, bufdc, 0, 0, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 71, 48, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster3);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 71, 48, bufdc, 0, 0, SRCPAINT);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 71, 48, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 4:
 				SelectObject(bufdc, Cmonster4);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 80, 55, bufdc, 0, 0, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 80, 55, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster4);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 80, 55, bufdc, 0, 0, SRCPAINT);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 80, 55, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 5:
 				SelectObject(bufdc, Cmonster5);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 44, 55, bufdc, 0, 0, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 44, 55, bufdc, 0, 0, SRCAND);
 				SelectObject(bufdc, monster5);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 44, 55, bufdc, 0, 0, SRCPAINT);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 44, 55, bufdc, 0, 0, SRCPAINT);
 				break;
 			case 6:
 				SelectObject(bufdc, monster);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 100, 55, bufdc, 0, 55, SRCAND);
-				BitBlt(mdc, 350 / 6 * pos[10].x + 25, pos[10].y + 35, 100, 55, bufdc, 0, 0, SRCPAINT);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 100, 55, bufdc, 0, 55, SRCAND);
+				BitBlt(mdc, 350 / 6 * pos[5].x + 25, pos[5].y + 35, 100, 55, bufdc, 0, 0, SRCPAINT);
 				break;
 			}
 		}
@@ -462,45 +461,6 @@ void MyPaint(HDC hdc)
 		if (pos[6].x <= 0)
 			movex = -movex;
 
-		flag++; // 表示左右脚
-
-		if (dir == 1)
-		{
-			if (flag % 6 == 1)
-				num = 1;
-			else if (flag % 6 == 5)
-				num = 2;
-			if (walk == 0)
-				num = 0;
-		}
-		else if (dir == 2)
-		{
-			if (flag % 6 == 1)
-				num = 4;
-			else if (flag % 6 == 5)
-				num = 5;
-			if (walk == 0)
-				num = 3;
-		}
-		else if (dir == 3)
-		{
-			if (flag % 6 == 1)
-				num = 6;
-			else if (flag % 6 == 5)
-				num = 7;
-			if (walk == 0)
-				num = 8;
-		}
-		else if (dir == 4)
-		{
-			if (flag % 6 == 1)
-				num = 10;
-			else if (flag % 6 == 5)
-				num = 11;
-			if (walk == 0)
-				num = 9;
-		}
-
 		v = v + a;
 		y = y + v;
 
@@ -516,21 +476,22 @@ void MyPaint(HDC hdc)
 			{
 				y = 250;
 				pos[i].y = pos[i].y - v;
-				pos[8].y = pos[0].y;
 				if (pos[i].y > 540)
 				{
 					if (i == 0)
 						zqt = 0;
-					if (i == 5)
-						monsterShow = 0;
-					score++;
-					if (i == 3)
+					else if (i == 3)
 						isBroken = 0;
-					pos[i].y = -40;
+					else if (i == 5)
+						monsterShow = 0;
+
+					score++;
 					pos[i].x = rand() % 5;
+					pos[i].y = -40;
 				}
 			}
 		}
+
 		for (int i = 0; i < N; i++)
 		{
 			if (i == 0)
@@ -551,9 +512,9 @@ void MyPaint(HDC hdc)
 				{
 					continue;
 				}
-				else if (isBroken == 0)
+				else
 				{
-					if (y >= pos[i].y - 25 && y <= pos[i].y + 25 && x >= 350 / 6 * pos[i].x && x <= 350 / 6 * pos[i].x && v >= 0)
+					if (y >= pos[i].y - 20 && y <= pos[i].y + 20 && x >= 350 / 6 * pos[i].x && x <= 350 / 6 * pos[i].x + 80 && v >= 0)
 					{
 						isBroken = 1;
 						v = -40;
@@ -563,8 +524,7 @@ void MyPaint(HDC hdc)
 			}
 			else if (i == 5)
 			{
-
-				if (monsterShow == 1 && y >= pos[i].y - 20 && y <= pos[i].y + 20 && x >= pos[i].x && x <= pos[i].x + 80 && v >= 0)
+				if (monsterShow == 1 && y >= pos[i].y - 20 && y <= pos[i].y + 20 && x >= 350 / 6 * pos[i].x && x <= 350 / 6 * pos[i].x + 80 && v >= 0)
 				{
 					Sleep(300);
 					mode = 0;
@@ -590,7 +550,6 @@ void MyPaint(HDC hdc)
 					y = pos[i].y;
 				}
 			}
-
 			if (y >= pos[i].y - 20 && y <= pos[i].y + 20 && x >= 350 / 6 * pos[i].x && x <= 350 / 6 * pos[i].x + 80 && v >= 0)
 			{
 				v = -40;
@@ -623,30 +582,7 @@ void MyPaint(HDC hdc)
 			monsterShow = 1;
 		}
 
-		// 子弹
-		if (bullet == 1)
-		{
-			hpen = CreatePen(PS_SOLID, 16, RGB(0, 0, 0));
-			SelectObject(hdc, hpen);
-			bullety -= 15;
-			MoveToEx(hdc, bulletx, bullety, NULL);
-			LineTo(hdc, bulletx, bullety);
-			if (bullety <= 0)
-			{
-				bullet = 0;
-			}
-			if (monsterShow == 1)
-			{
-				if (bulletx <= 350 / 6 * pos[10].x + 25 + 100 && bulletx >= 350 / 6 * pos[10].x + 25 && bullety <= pos[10].y + 35 + 25 && bullety >= pos[10].y + 35 - 25)
-				{
-					bullet = 0;
-					monsterShow = 0;
-					score += 5; // +5
-				}
-			}
-			DeleteObject(hpen);
-		}
-
+		// 死亡
 		if (y >= 720)
 		{
 			// 记录死亡位置
@@ -658,7 +594,7 @@ void MyPaint(HDC hdc)
 				deadpos[i].y = pos[i].y;
 			}
 
-			Sleep(300);
+			Sleep(400);
 			mode = 0;
 			X = 50;
 			Y = 400;
@@ -818,10 +754,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 		// mciSendString("OPEN res/deal.wav ALIAS MUSIC", NULL, 0, 0); // 打开文件
 		// mciSendString("PLAY MUSIC FROM 0", NULL, 0, NULL);			// 播放
-
-		break;
-	case WM_KEYUP:
-		walk = 0;
 		break;
 	case WM_LBUTTONDOWN:
 		mousex = LOWORD(lParam);
@@ -875,29 +807,15 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		case VK_ESCAPE:			// 按下【Esc】键
 			PostQuitMessage(0); // 结束程序
 			break;
-		case VK_UP: // 按下【↑】键
-			// 先按照目前的移动方向来进行贴图坐标修正，并加入人物往上移动的量（每次按下一次按键移动10个单位），来决定人物贴图坐标的X与Y值，接着判断坐标是否超出窗口区域，若有则再次修正
-			if (mode == 1 && bullet == 0)
-			{
-				bullet = 1;
-				bulletx = x + 35;
-				bullety = y - 55;
-			}
-			walk = 1;
-			break;
 		case VK_LEFT: // 按下【←】键
 			if (mode == 1)
 			{
-				walk = 1;
-				dir = 3;
 				x -= 30;
 			}
 			break;
 		case VK_RIGHT: // 按下【→】键
 			if (mode == 1)
 			{
-				walk = 1;
-				dir = 4;
 				x += 30;
 			}
 			break;
