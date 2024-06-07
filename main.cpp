@@ -28,7 +28,7 @@ int gameMap = -1;  // 选择地图
 int totol;		   // 历史板块
 int maxScore, now; // 记录最高得分，当前局踩过的板块
 int num;
-int X, Y;						
+int X, Y;
 int x, y;						// 游戏中
 int score;						// 分数
 static char sc[100];			// 显示分数
@@ -42,9 +42,8 @@ int zqt, zqtUse, zqtScore, cnt; // 竹蜻蜓
 int isBroken;					// 一次性板是否坏了
 int movex = 4;					// 板子位移
 int height = 30;				// 二段跳高度
-int mx, my, mv;					// 怪兽坐标 速度
+int mx, my, mv, no;				// 怪兽坐标 速度
 int payShow;					// 显示支付界面
-int no;
 const char filename[] = "data/histroyScore.txt";
 const char filename2[] = "data/histroyBoard.txt";
 struct point
@@ -60,7 +59,6 @@ ATOM MyRegisterClass(HINSTANCE hInstance);
 BOOL InitInstance(HINSTANCE, int);
 LRESULT CALLBACK WndProc(HWND, UINT, WPARAM, LPARAM);
 void MyPaint(HDC hdc);
-void fresh(HDC hdc);
 
 //****WinMain函数，程序入口点函数***********************
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
@@ -456,9 +454,9 @@ void MyPaint(HDC hdc)
 		y = y + v;
 
 		if (x + 40 > 350)
-			x = 300;
-		if (x + 40 < 0)
 			x = 0;
+		if (x + 40 < 0)
+			x = 320;
 
 		// 动态效果
 		if (y < 250)
@@ -576,16 +574,7 @@ void MyPaint(HDC hdc)
 		// 死亡
 		if (y >= 720)
 		{
-			// 记录死亡位置
-			deadx = x;
-			deady = 720 - 95;
-			for (int i = 0; i < 20; i++)
-			{
-				deadpos[i].x = pos[i].x;
-				deadpos[i].y = pos[i].y;
-			}
-
-			Sleep(400);
+			Sleep(300);
 			mode = 0;
 			X = 50;
 			Y = 400;
@@ -654,8 +643,6 @@ void MyPaint(HDC hdc)
 		{ // 到最低点
 			mv = -40;
 		}
-
-		// 显示死亡回放
 
 		// 显示得分
 		sprintf(sc, "您最后的得分为%d分", score);
