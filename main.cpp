@@ -485,7 +485,7 @@ void MyPaint(HDC hdc)
 		{
 			if (i == 0)
 			{
-				if (zqt == 1 && y >= pos[i].y - 25 && y <= pos[i].y + 25 && x >= 350 / 6 * pos[i].x + 25 && x <= 350 / 6 * pos[i].x + 25 + 80 && v >= 0)
+				if (zqt == 1 && y >= pos[i].y - 25 && y <= pos[i].y + 25 && x >= 350 / 6 * pos[i].x && x <= 350 / 6 * pos[i].x + 25 + 80 && v >= 0)
 				{
 					if (zqt == 1)
 					{
