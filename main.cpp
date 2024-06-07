@@ -27,29 +27,29 @@ HBRUSH hbrush;
 PAINTSTRUCT ps;
 TEXTMETRIC tm;
 
-int gameMap = -1;				 // 选择地图
-int totol;						 // 历史板块
-int maxScore, now;				 // 记录最高得分，当前局踩过的板块
-int num, dir, walk;				 // num 人物当前动画  dir 人物朝向  isWalk 人是否行走
-int X, Y;						 // 人物静态贴图坐标
-int x, y;						 // 游戏中
-int flag, maxy;					 // flag 左右脚标志  maxy 当前y能到达的最大高度
-int score;						 // 分数
-static char sc[100];			 // 显示分数
-int mousex, mousey;				 // 鼠标坐标x,y
-int a = 5, v = -10;				 // 加速度、速度
-int mode;						 // mode 1 游戏界面 mode 0 菜单界面 mode 2 选择地图 mode 3 游戏结算界面 4 支付界面
-int winX = 350, winY = 720;		 // 窗口大小
-char *helptxt[6] = {};			 // 帮助
-int bullet, bulletx, bullety;	 // 子弹
-int monsterShow;				 // show 0 不出现怪兽 show 1 出现怪兽
-int zqt, zqtUse, zqtScore, num2; // 竹蜻蜓
-int isBroken;					 // 一次性板是否坏了
-int movex = 4;					 // 板子位移
-int height = 30;				 // 二段跳高度
-int tmp = 8;					 // 竹蜻蜓所在版
-int mx, my, mv;					 // 怪兽坐标 速度
-int payShow;					 // 显示支付界面
+int gameMap = -1;				// 选择地图
+int totol;						// 历史板块
+int maxScore, now;				// 记录最高得分，当前局踩过的板块
+int num, dir, walk;				// num 人物当前动画  dir 人物朝向  isWalk 人是否行走
+int X, Y;						// 人物静态贴图坐标
+int x, y;						// 游戏中
+int flag, maxy;					// flag 左右脚标志  maxy 当前y能到达的最大高度
+int score;						// 分数
+static char sc[100];			// 显示分数
+int mousex, mousey;				// 鼠标坐标x,y
+int a = 5, v = -10;				// 加速度、速度
+int mode;						// mode 1 游戏界面 mode 0 菜单界面 mode 2 选择地图 mode 3 游戏结算界面 4 支付界面
+int winX = 350, winY = 720;		// 窗口大小
+char *helptxt[6] = {};			// 帮助
+int bullet, bulletx, bullety;	// 子弹
+int monsterShow;				// show 0 不出现怪兽 show 1 出现怪兽
+int zqt, zqtUse, zqtScore, cnt; // 竹蜻蜓
+int isBroken;					// 一次性板是否坏了
+int movex = 4;					// 板子位移
+int height = 30;				// 二段跳高度
+int tmp = 8;					// 竹蜻蜓所在版
+int mx, my, mv;					// 怪兽坐标 速度
+int payShow;					// 显示支付界面
 const char filename[] = "data/histroyScore.txt";
 const char filename2[] = "data/histroyBoard.txt";
 struct point
@@ -138,7 +138,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 
 	srand((unsigned)time(NULL));
 
-	////////////////////////////////////////
 	hdc = GetDC(hWnd);
 	mdc = CreateCompatibleDC(hdc);
 	bufdc = CreateCompatibleDC(hdc);
@@ -173,7 +172,6 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	bg = (HBITMAP)LoadImage(NULL, "res/bg.bmp", IMAGE_BITMAP, winX, winY, LR_LOADFROMFILE);
 	bg2 = (HBITMAP)LoadImage(NULL, "res/bg2.bmp", IMAGE_BITMAP, winX, winY, LR_LOADFROMFILE);
 	bg3 = (HBITMAP)LoadImage(NULL, "res/bg3.bmp", IMAGE_BITMAP, winX, winY, LR_LOADFROMFILE);
-
 	// 地图
 	map = (HBITMAP)LoadImage(NULL, "res/map.bmp", IMAGE_BITMAP, winX, winY, LR_LOADFROMFILE);
 	sky = (HBITMAP)LoadImage(NULL, "res/sky.bmp", IMAGE_BITMAP, winX, winY, LR_LOADFROMFILE);
@@ -202,12 +200,14 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 	y = 330;
 	maxy = y;
 
+	// 结算界面的怪兽
 	mx = 125;
 	my = 350;
 	mv = -40;
-	// 初始化菜单中人坐标
+
+	// 初始化菜单中doodle坐标
 	X = 55;
-	Y = 400;
+	Y = 399;
 
 	// 初始化板坐标
 	srand((unsigned)time(NULL));
@@ -216,6 +216,8 @@ BOOL InitInstance(HINSTANCE hInstance, int nCmdShow)
 		plat[i].x = rand() % 5;
 		plat[i].y = 550 - 80 * i;
 	}
+	plat[6].x = 100;
+
 	MyPaint(hdc);
 
 	return TRUE;
@@ -244,14 +246,13 @@ void MyPaint(HDC hdc)
 
 		// 竹蜻蜓
 		SelectObject(bufdc, hopter);
-		BitBlt(mdc, X + 15, Y - 15, 50, 50, bufdc, num2 * 50, 50, SRCAND);
-		BitBlt(mdc, X + 15, Y - 15, 50, 50, bufdc, num2 * 50, 0, SRCPAINT);
-		num2++;
-		if (num2 == 4)
-			num2 = 0;
+		BitBlt(mdc, X + 15, Y - 15, 50, 50, bufdc, cnt * 50, 50, SRCAND);
+		BitBlt(mdc, X + 15, Y - 15, 50, 50, bufdc, cnt * 50, 0, SRCPAINT);
+		cnt++;
+		if (cnt == 4)
+			cnt = 0;
 
 		// ufo
-		//  if (mode == 0 && mousex >= 175 && mousex <= 328 && mousey >= 293 && mousey <= 342)
 		SelectObject(bufdc, Cufo);
 		BitBlt(mdc, 215, 390, 84, 126, bufdc, 0, 0, SRCAND);
 		SelectObject(bufdc, ufo);
@@ -348,22 +349,23 @@ void MyPaint(HDC hdc)
 
 		// 板块贴图
 		// 3 一次性 6 移动
-		int t = rand() % N;
 		for (int i = 0; i < N; i++)
 		{
-			if (i == 3 && isBroken == 1)
-			{ // 一次性板贴图
-				SelectObject(bufdc, brokenBoard);
-				BitBlt(mdc, 350 / 6 * plat[i].x + 25, plat[i].y + 95, 80, 30, bufdc, 0, 30, SRCAND);
-				BitBlt(mdc, 350 / 6 * plat[i].x + 25, plat[i].y + 95, 80, 30, bufdc, 0, 0, SRCPAINT);
-				continue;
-			}
-
-			if (i == t)
-			{ // 移动版贴图
+			// 移动版贴图
+			if (i == 6)
+			{
 				SelectObject(bufdc, moveBoard);
 				BitBlt(mdc, plat[i].x + 25, plat[i].y + 95, 80, 15, bufdc, 0, 0, SRCAND);
 				BitBlt(mdc, plat[i].x + 25, plat[i].y + 95, 80, 15, bufdc, 0, 0, SRCPAINT);
+				continue;
+			}
+
+			// 一次性板贴图
+			if (i == 3 && isBroken == 1)
+			{
+				SelectObject(bufdc, brokenBoard);
+				BitBlt(mdc, 350 / 6 * plat[i].x + 25, plat[i].y + 95, 80, 30, bufdc, 0, 30, SRCAND);
+				BitBlt(mdc, 350 / 6 * plat[i].x + 25, plat[i].y + 95, 80, 30, bufdc, 0, 0, SRCPAINT);
 				continue;
 			}
 
@@ -372,34 +374,78 @@ void MyPaint(HDC hdc)
 			BitBlt(mdc, 350 / 6 * plat[i].x + 25, plat[i].y + 85, 80, 15, bufdc, 0, 0, SRCPAINT);
 		}
 
+		// 移动板
+		plat[6].x += movex;
+		if (plat[6].x >= 250)
+			movex = -movex;
+		if (plat[6].x <= 0)
+			movex = -movex;
+
 		// 人
 		SelectObject(bufdc, role);
 		BitBlt(mdc, x, y, 47, 95, bufdc, num * 47, 95, SRCAND);
 		BitBlt(mdc, x, y, 47, 95, bufdc, num * 47, 0, SRCPAINT);
 
-		if (monsterShow)
-		{ // 怪兽的显示
+		// 竹蜻蜓
+		if (zqt)
+		{
+			SelectObject(bufdc, hopter);
+			BitBlt(mdc, 350 / 6 * plat[tmp].x + 25, plat[tmp].y + 40, 50, 50, bufdc, 50, 50, SRCAND);
+			BitBlt(mdc, 350 / 6 * plat[tmp].x + 25, plat[tmp].y + 40, 50, 50, bufdc, 50, 0, SRCPAINT);
+		}
 
+		if (zqtUse)
+		{
+			SelectObject(bufdc, hopter);
+			BitBlt(mdc, x, y - 25, 50, 50, bufdc, cnt * 50, 50, SRCAND);
+			BitBlt(mdc, x, y - 25, 50, 50, bufdc, cnt * 50, 0, SRCPAINT);
+			cnt++;
+			if (cnt == 4)
+				cnt = 0;
+		}
+
+		// 怪兽
+		if (monsterShow)
+		{
+			// 随机怪兽的形状
 			int no = rand() % 6;
 			switch (no)
 			{
 			case 0:
-				SelectObject(bufdc, monster);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 100, 55, bufdc, 0, 55, SRCAND);
-				SelectObject(bufdc, monster);
-				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 100, 55, bufdc, 0, 55, SRCAND);
+				SelectObject(bufdc, Cmonster0);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 195, 97, bufdc, 0, 55, SRCAND);
+				SelectObject(bufdc, monster0);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 195, 97, bufdc, 0, 55, SRCAND);
 				break;
 			case 1:
+				SelectObject(bufdc, Cmonster1);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 43, 55, bufdc, 0, 55, SRCAND);
+				SelectObject(bufdc, monster1);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 43, 55, bufdc, 0, 55, SRCAND);
 				break;
 			case 2:
-
+				SelectObject(bufdc, Cmonster2);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 78, 30, bufdc, 0, 55, SRCAND);
+				SelectObject(bufdc, monster);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 78, 30, bufdc, 0, 55, SRCAND);
 				break;
 			case 3:
-
+				SelectObject(bufdc, Cmonster3);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 71, 48, bufdc, 0, 55, SRCAND);
+				SelectObject(bufdc, monster3);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 71, 48, bufdc, 0, 55, SRCAND);
 				break;
 			case 4:
+				SelectObject(bufdc, Cmonster4);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 80, 55, bufdc, 0, 55, SRCAND);
+				SelectObject(bufdc, monster4);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 80, 55, bufdc, 0, 55, SRCAND);
 				break;
 			case 5:
+				SelectObject(bufdc, Cmonster5);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 44, 55, bufdc, 0, 55, SRCAND);
+				SelectObject(bufdc, monster5);
+				BitBlt(mdc, 350 / 6 * plat[10].x + 25, plat[10].y + 35, 44, 55, bufdc, 0, 55, SRCAND);
 				break;
 			case 6:
 				SelectObject(bufdc, monster);
@@ -408,27 +454,12 @@ void MyPaint(HDC hdc)
 			}
 		}
 
-		if (zqt)
-		{ // 竹蜻蜓静态贴图
-			SelectObject(bufdc, hopter);
-			BitBlt(mdc, 350 / 6 * plat[tmp].x + 25, plat[tmp].y + 40, 50, 50, bufdc, 0 * 50, 50, SRCAND);
-			BitBlt(mdc, 350 / 6 * plat[tmp].x + 25, plat[tmp].y + 40, 50, 50, bufdc, 0 * 50, 0, SRCPAINT);
-		}
-		else if (zqtUse)
-		{ // 使用竹蜻蜓，动态贴图
-			SelectObject(bufdc, hopter);
-			BitBlt(mdc, x, y - 25, 50, 50, bufdc, num2 * 50, 50, SRCAND);
-			BitBlt(mdc, x, y - 25, 50, 50, bufdc, num2 * 50, 0, SRCPAINT);
-			num2++;
-			if (num2 == 4)
-				num2 = 0;
-		}
-
 		// 贴图完成，显示
 		BitBlt(hdc, 0, 0, winX, winY, mdc, 0, 0, SRCCOPY);
 
 		tPre = GetTickCount(); // 记录此次绘图时间
-		flag++;				   // 表示左右脚
+
+		flag++; // 表示左右脚
 		if (dir == 1)
 		{
 			if (flag % 6 == 1)
@@ -466,24 +497,16 @@ void MyPaint(HDC hdc)
 				num = 9;
 		}
 
-		// 重力代码
 		v = v + a;
 		y = y + v;
 
-		// 移动板
-		plat[6].x += movex;
-		if (plat[6].x >= 250)
-			movex = -movex;
-		if (plat[6].x <= 0)
-			movex = -movex;
-
-		// 穿越
+		// 禁止穿越
 		if (x + 40 > 350)
-			x = 0;
+			x = 300;
 		if (x + 40 < 0)
-			x = 320;
+			x = 0;
 
-		// 让纵向连接起来的代码
+		// 动态效果
 		if (y < 250)
 		{
 			for (int i = 0; i < N; i++)
@@ -581,37 +604,6 @@ void MyPaint(HDC hdc)
 			DeleteObject(hpen);
 		}
 
-		// 生成怪兽
-		if (score % 11 == 0 && score != 0)
-		{
-			monsterShow = 1;
-			score += 1;
-		}
-
-		// 子弹
-		if (bullet == 1)
-		{
-			hpen = CreatePen(PS_SOLID, 16, RGB(0, 0, 0));
-			SelectObject(hdc, hpen);
-			bullety -= 15;
-			MoveToEx(hdc, bulletx, bullety, NULL);
-			LineTo(hdc, bulletx, bullety);
-			if (bullety <= 0)
-			{
-				bullet = 0;
-			}
-			if (monsterShow == 1)
-			{
-				if (bulletx <= 350 / 6 * plat[5].x + 25 + 100 && bulletx >= 350 / 6 * plat[5].x + 25 && bullety <= plat[5].y + 35 + 25 && bullety >= plat[5].y + 35 - 25)
-				{ // 命中
-					bullet = 0;
-					monsterShow = 0;
-					score += 5; // +5
-				}
-			}
-			DeleteObject(hpen);
-		}
-
 		// 生成竹蜻蜓
 		if (score % 6 == 0 && zqtUse == 0)
 		{
@@ -631,9 +623,39 @@ void MyPaint(HDC hdc)
 			}
 		}
 
-		// 死亡
+		// 生成怪兽
+		if (score % 10 == 0)
+		{
+			monsterShow = 1;
+		}
+
+		// 子弹
+		if (bullet == 1)
+		{
+			hpen = CreatePen(PS_SOLID, 16, RGB(0, 0, 0));
+			SelectObject(hdc, hpen);
+			bullety -= 15;
+			MoveToEx(hdc, bulletx, bullety, NULL);
+			LineTo(hdc, bulletx, bullety);
+			if (bullety <= 0)
+			{
+				bullet = 0;
+			}
+			if (monsterShow == 1)
+			{
+				if (bulletx <= 350 / 6 * plat[10].x + 25 + 100 && bulletx >= 350 / 6 * plat[10].x + 25 && bullety <= plat[10].y + 35 + 25 && bullety >= plat[10].y + 35 - 25)
+				{ // 命中
+					bullet = 0;
+					monsterShow = 0;
+					score += 5; // +5
+				}
+			}
+			DeleteObject(hpen);
+		}
+
 		if (y >= 720)
 		{
+			// 记录死亡位置
 			deadx = x;
 			deady = 720 - 95;
 			for (int i = 0; i < 20; i++)
@@ -650,11 +672,11 @@ void MyPaint(HDC hdc)
 			isBroken = 0;
 			mode = 3;
 			for (int i = 0; i < N; i++)
-			{ // 重新生成
-				srand((unsigned)time(NULL) * i);
+			{
 				plat[i].x = rand() % 5;
-				plat[i].y = 500 - 80 * i;
+				plat[i].y = 550 - 80 * i;
 			}
+			plat[6].x = 100;
 		}
 
 		sprintf(sc, "得分：%d", score);
