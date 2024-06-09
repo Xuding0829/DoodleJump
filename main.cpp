@@ -1,8 +1,10 @@
 #include <windows.h>
+#include <mmsystem.h>
 #include <string.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <time.h>
+#pragma comment(lib, "WINMM.LIB")
 #define N 15
 
 // 全局变量声明
@@ -726,6 +728,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	{
 	case WM_CREATE:
 		MessageBox(NULL, "← →控制移动，空格跳跃。\n 开始你的游戏吧~^v^~", "游戏说明", MB_OK);
+		// mciSendString("open res/ms.wav alias music", NULL,0, NULL);
+		// mciSendString("play music repeat", NULL,0, NULL);
 		break;
 	case WM_LBUTTONDOWN:
 		mousex = LOWORD(lParam);
@@ -835,7 +839,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			DeleteObject(board[i]);
 		ReleaseDC(hWnd, hdc);
 		// PlaySound(NULL, NULL, NULL); // 停止播放
-		// mciSendString("CLOSE MUSIC", NULL, 0, NULL); // 关闭
+		// mciSendString("close music", 0, 0, 0);
 		PostQuitMessage(0);
 		break;
 	default: // 其他消息
