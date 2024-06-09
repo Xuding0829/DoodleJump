@@ -1,6 +1,6 @@
 # DoodleJump 
 
-本项目为仿照《涂鸦跳跃》游戏的项目
+一个基于WindowsGDI的涂鸦跳跃小游戏。
 
 TODO
 
