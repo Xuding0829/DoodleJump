@@ -1,12 +1,12 @@
 [
     {
-        "caretX": 1,
-        "caretY": 1,
+        "caretX": 4,
+        "caretY": 86,
         "filename": "C:/Users/Devinx/Desktop/windows/DoodleJump/main.cpp",
         "focused": true,
         "isOpen": true,
         "leftChar": 1,
         "order": 0,
-        "topLine": 1
+        "topLine": 76
     }
 ]
