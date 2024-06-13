@@ -44,7 +44,7 @@ UseUTF8 = 1
 
 
 [Unit1]
-FileName = res/monster1.bmp
+FileName = res/ufo.bmp
 CompileCpp = 1
 Folder = 其他文件/res
 Compile = 0
@@ -77,7 +77,7 @@ SyncProduct = 1
 
 
 [Unit2]
-FileName = res/map.bmp
+FileName = res/bg2.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -90,7 +90,7 @@ CompileCpp = 1
 
 
 [Unit3]
-FileName = res/monster.bmp
+FileName = res/brokenBoard.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -103,8 +103,8 @@ CompileCpp = 1
 
 
 [Unit4]
-FileName = data/histroyBoard.txt
-Folder = 其他文件/data
+FileName = res/bg.bmp
+Folder = 其他文件/res
 Compile = 0
 Link = 0
 Priority = 1000
@@ -115,7 +115,7 @@ RealEncoding = ASCII
 
 
 [Unit5]
-FileName = res/monster5.bmp
+FileName = res/Cmonster0.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -128,7 +128,7 @@ CompileCpp = 1
 
 
 [Unit6]
-FileName = res/Cmonster1.bmp
+FileName = res/monster1.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -140,7 +140,7 @@ RealEncoding = ASCII
 
 
 [Unit7]
-FileName = res/app.ico
+FileName = res/monster2.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -152,20 +152,20 @@ RealEncoding = ASCII
 
 
 [Unit8]
-FileName = res/sea.bmp
-Folder = 其他文件/res
-Compile = 0
-Link = 0
+FileName = main.cpp
+Folder = 源文件
+Compile = 1
+Link = 1
 Priority = 1000
 OverrideBuildCmd = 0
 BuildCmd = 
 FileEncoding = PROJECT
-RealEncoding = ASCII
+RealEncoding = UTF-8
 CompileCpp = 1
 
 
 [Unit9]
-FileName = res/Cufo.bmp
+FileName = res/pay.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -178,7 +178,7 @@ CompileCpp = 1
 
 
 [Unit10]
-FileName = res/moveBoard.bmp
+FileName = res/map.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -203,7 +203,7 @@ CompileCpp = 1
 
 
 [Unit12]
-FileName = res/bg.bmp
+FileName = res/monster0.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -215,7 +215,7 @@ RealEncoding = ASCII
 
 
 [Unit13]
-FileName = res/board.bmp
+FileName = res/monster.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -227,7 +227,7 @@ RealEncoding = ASCII
 
 
 [Unit14]
-FileName = res/role.bmp
+FileName = res/Cmonster2.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -239,7 +239,7 @@ RealEncoding = ASCII
 
 
 [Unit15]
-FileName = res/sky.bmp
+FileName = res/sea.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -251,7 +251,7 @@ RealEncoding = ASCII
 
 
 [Unit16]
-FileName = res/monster2.bmp
+FileName = res/Cmonster1.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -263,7 +263,7 @@ RealEncoding = ASCII
 
 
 [Unit17]
-FileName = res/board2.bmp
+FileName = res/monster4.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -275,20 +275,20 @@ RealEncoding = ASCII
 
 
 [Unit18]
-FileName = main.cpp
-Folder = 源文件
-Compile = 1
-Link = 1
+FileName = res/bg3.bmp
+Folder = 其他文件/res
+Compile = 0
+Link = 0
 Priority = 1000
 OverrideBuildCmd = 0
 BuildCmd = 
 FileEncoding = PROJECT
-RealEncoding = UTF-8
+RealEncoding = ASCII
 CompileCpp = 1
 
 
 [Unit19]
-FileName = res/Cmonster0.bmp
+FileName = res/board2.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -300,7 +300,7 @@ RealEncoding = ASCII
 
 
 [Unit20]
-FileName = res/doodle.bmp
+FileName = res/role.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -312,18 +312,6 @@ RealEncoding = ASCII
 
 
 [Unit21]
-FileName = res/ufo.bmp
-Folder = 其他文件/res
-Compile = 0
-Link = 0
-Priority = 1000
-OverrideBuildCmd = 0
-BuildCmd = 
-FileEncoding = PROJECT
-RealEncoding = ASCII
-
-
-[Unit22]
 FileName = data/histroyScore.txt
 Folder = 其他文件/data
 Compile = 0
@@ -335,8 +323,20 @@ FileEncoding = PROJECT
 RealEncoding = ASCII
 
 
+[Unit22]
+FileName = res/moveBoard.bmp
+Folder = 其他文件/res
+Compile = 0
+Link = 0
+Priority = 1000
+OverrideBuildCmd = 0
+BuildCmd = 
+FileEncoding = PROJECT
+RealEncoding = ASCII
+
+
 [Unit23]
-FileName = res/bg3.bmp
+FileName = res/ms.wav
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -348,7 +348,7 @@ RealEncoding = ASCII
 
 
 [Unit24]
-FileName = res/Cmonster4.bmp
+FileName = res/doodle.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -372,8 +372,8 @@ RealEncoding = ASCII
 
 
 [Unit26]
-FileName = res/monster0.bmp
-Folder = 其他文件/res
+FileName = data/histroyBoard.txt
+Folder = 其他文件/data
 Compile = 0
 Link = 0
 Priority = 1000
@@ -384,7 +384,7 @@ RealEncoding = ASCII
 
 
 [Unit27]
-FileName = res/ms.wav
+FileName = res/monster5.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -396,7 +396,7 @@ RealEncoding = ASCII
 
 
 [Unit28]
-FileName = res/brokenBoard.bmp
+FileName = res/app.ico
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -409,7 +409,7 @@ CompileCpp = 1
 
 
 [Unit29]
-FileName = res/monster3.bmp
+FileName = res/Cmonster3.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -421,7 +421,7 @@ RealEncoding = ASCII
 
 
 [Unit30]
-FileName = res/monster4.bmp
+FileName = res/monster3.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -433,7 +433,7 @@ RealEncoding = ASCII
 
 
 [Unit31]
-FileName = res/bg2.bmp
+FileName = res/Cufo.bmp
 CompileCpp = 1
 Folder = 其他文件/res
 Compile = 0
@@ -458,7 +458,7 @@ RealEncoding = ASCII
 
 
 [Unit33]
-FileName = res/pay.bmp
+FileName = res/Cmonster4.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -470,7 +470,7 @@ RealEncoding = ASCII
 
 
 [Unit34]
-FileName = res/Cmonster3.bmp
+FileName = res/sky.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0
@@ -482,7 +482,7 @@ RealEncoding = ASCII
 
 
 [Unit35]
-FileName = res/Cmonster2.bmp
+FileName = res/board.bmp
 Folder = 其他文件/res
 Compile = 0
 Link = 0

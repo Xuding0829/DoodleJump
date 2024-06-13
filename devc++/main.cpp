@@ -456,9 +456,9 @@ void MyPaint(HDC hdc)
 		y = y + v;
 
 		if (x + 40 > 350)
-			x = 0;
+			x = 300;
 		if (x + 40 < 0)
-			x = 320;
+			x = 0;
 
 		// 动态效果
 		if (y < 250)
@@ -579,7 +579,7 @@ void MyPaint(HDC hdc)
 			Sleep(300);
 			mode = 0;
 			X = 50;
-			Y = 400;
+			Y = 350;
 			v = -10;
 			isBroken = 0;
 			mode = 3;
